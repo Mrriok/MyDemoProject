@@ -1,0 +1,26 @@
+system:
+  user:
+    name: administrator
+    password: Admin1234
+
+filenet:
+  ADMIN: p8admin
+  PWD: Admin1234
+  ContentEngineURL: http://192.168.52.164:9080/wsi/FNCEWS40MTOM/
+  #  http://192.168.52.164:9080/acce
+  JAASStanzaName: FileNetP8WSI
+  DOMAIN_NAME: FNDomain
+  OS: FNOS
+#UAT/prod
+#system:
+#  user:
+#   name: administrator
+#   password: r@W&Lq_7
+#
+#filenet:
+#  ADMIN: sy_ldtm
+#  PWD: '!QAZxsw2!!@@'
+#  ContentEngineURL: http://10.72.159.241:9080/acce/wsi/FNCEWS40MTOM/
+#  JAASStanzaName: FileNetP8WSI
+#  DOMAIN_NAME: FNDomain
+#  OS: FNOS1

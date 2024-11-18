@@ -1,0 +1,80 @@
+<html>
+<head>
+    <meta content="IE=10" http-equiv="X-UA-Compatible"/>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+    <title>NTKO</title>
+    <link href="officecontrol/ntkoStyle.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript">
+        var CLOSEVENT = false;
+        var readOnly;
+        var fnId,md5,fileName,id
+        var m = 1;
+
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if(r != null) {
+                return r[2];
+            }
+            return '';
+
+        }
+
+
+        function openhtml() {
+            console.log('openHtml')
+            debugger
+            if (m !== 1) {// KaMi这里为了解决厂商的一个BUG openhtml会在onload的时候执行2次导致ntko控件同时开启2个 所以做一步控制
+                return;
+            }
+            //判断插件是否安装
+            var ntkoed = ntkoBrowser.ExtensionInstalled();
+            var date = new Date();
+            var version = '' + date.getFullYear() + '' + (date.getMonth() + 1) + '' + date.getDate() + '' + date.getHours() + '' + date.getMinutes() + '' + date.getSeconds();
+            if (ntkoed) {
+                m = 2;
+                ntkoBrowser.openWindow("http://" + window.location.host + '/cnooc_system/public/ntko/editindex.html?md5='+ md5 + (fnId ? "&fnId="+fnId : "") + '&fileName='+ fileName + (id ? "&id="+id : "") , false, "  ", "B5278F08E7A18BE758EF3122FC4385528EDC7E8D");// KaMi这里有个坑一定要加version随机数 不然会有巨大的缓存无法执行新改的代码
+            } else {
+                var iTop = ntkoBrowser.NtkoiTop();   //获得窗口的垂直位置;
+                var iLeft = ntkoBrowser.NtkoiLeft();        //获得窗口的水平位置;
+                window.open("ntko.html?ver=" + version, "", "height=200px,width=500px,top=" + iTop + "px,left=" + iLeft + "px,titlebar=no,toolbar=no,menubar=no,scrollbars=auto,resizeable=no,location=no,status=no");
+            }
+            setTimeout(closeWindow,500);
+        }
+
+        //在父页面定义的跨浏览器插件应用程序关闭事件响应方法，且方法名不能自定义，必须是ntkoCloseEvent
+        function ntkoCloseEvent() {
+            if (CLOSEVENT) alert("跨浏览器插件应用程序窗口已关闭!");
+        }
+
+        //在父页面定义的用于接收子页面回传值的方法，方法名可以自定义，定义后的方法名需要在子页面中通过window.external.SetReturnValueToParentPage进行注册
+        //KaMi 这里为1的时候是点击了关闭文档  其他情况是保存文档
+        function OnData(argv1) {
+            if (argv1 === 1) {
+                window.close();
+                window.localStorage.setItem('ntkoReturnData1', 'true');// 把值变为true 应用项目检测到true时就代表文档关闭了
+            } else {
+                window.localStorage.setItem('ntkoReturnData', JSON.stringify(argv1));// 返回保存成功后的response对象
+                window.localStorage.setItem('ntkoReturnCeId', ceId) // 返回编辑下载的ceId
+            }
+        }
+
+        function closeWindow(argv1) {
+            var userAgent = navigator.userAgent;
+            if (userAgent.indexOf("Firefox") != -1 || userAgent.indexOf("Chrome") != -1) {
+                window.location.href = "about:blank";
+                window.close();
+            } else {
+                window.opener = null;
+                window.open("", "_self");
+                window.close();
+            }
+        }
+    </script>
+
+</head>
+
+<body onload="md5=getQueryString('md5') ;fnId=getQueryString('fnId');fileName=getQueryString('fileName');id=getQueryString('id');setTimeout(openhtml,1000);;">
+<script type="text/javascript" src="officecontrol/ntkobackground.min.js"></script>
+</body>
+</html>
